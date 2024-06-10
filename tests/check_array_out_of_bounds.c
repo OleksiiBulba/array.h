@@ -11,7 +11,7 @@ void test_assert(bool condition, const char *msg, const char *file, int line);
 ARRAY_DEFINE(int);
 ARRAY_PTR_DEFINE(int);
 
-#include "try-catch.h"
+#include "./try-catch/try-catch.h"
 
 START_TEST(test_array_out_of_bounds)
 {
