@@ -1,20 +1,20 @@
 CC=cc
 CFLAGS=-Wall -Wextra
+LDFLAGS=-lcheck -lm -pthread -lsubunit
 
-all: test_array
+BIN_DIR=./bin
+TEST_BIN=$(BIN_DIR)/check_array
+SRC_DIR=./tests
+TEST_SRC=$(SRC_DIR)/check_array.c
 
-bin/test_array: test_array.o
-	$(CC) $(CFLAGS) -o bin/test_array bin/test_array.o
-
-bin/test_array.o: test_array.c array.h
-	$(CC) $(CFLAGS) -g -c bin/test_array.c
+all: test
 
 clean:
-	rm -f bin/*.o bin/test_array
+	rm -f $(BIN_DIR)/*.o $(TEST_BIN)
 
-run: test_array
-	bin/test_array
+test: $(TEST_BIN)
+	$(TEST_BIN)
 
-memleaks:
-	cc -fsanitize=address -o test test.c -Wall -Wextra -g && ./test
+$(TEST_BIN): $(TEST_SRC)
+	$(CC) $(CFLAGS) $(TEST_SRC) -o $(TEST_BIN) $(LDFLAGS)
 

@@ -59,6 +59,7 @@
 #endif
 
 #ifdef ARRAY_DEBUG
+#include <stdio.h>
 #define ARRAY_LOG_DEBUG(fmt, ...) printf(fmt, ##__VA_ARGS__)
 #else
 #define ARRAY_LOG_DEBUG(...)
@@ -199,6 +200,7 @@ extern "C" {
             for (size_t i = 0; i < (array)->count; i++) {       \
                 if ((array)->items[i].should_free) {            \
                     ARRAY_FREE((array)->items[i].item);         \
+                    (array)->items[i].item = NULL;              \
                 }                                               \
             }                                                   \
             ARRAY_FREE((array)->items);                         \
@@ -209,7 +211,7 @@ extern "C" {
         ARRAY_FREE(array);                                      \
     } while (0)
 
-#define array_new(array_type) array_new_with_cap(array_type, 0)
+#define array_new(array_type) array_new_with_cap(array_type, ARRAY_INIT_CAP)
 
 #define array_new_with_cap(array_type, initial_capacity)  ({                                \
     array_type *arr = ARRAY_MALLOC(sizeof(array_type));                                     \
@@ -217,11 +219,13 @@ extern "C" {
     arr->items = NULL;                                                                      \
     arr->count = 0;                                                                         \
     arr->capacity = 0;                                                                      \
+    ARRAY_LOG_DEBUG("Allocated array with initial capacity: %d\n", initial_capacity);       \
     if (initial_capacity > 0) {                                                             \
         arr->items = ARRAY_MALLOC(initial_capacity * sizeof(*(arr->items)));                \
         ARRAY_ASSERT(arr->items != NULL, "Failed to allocate memory for array items");      \
         arr->capacity = initial_capacity;                                                   \
     }                                                                                       \
+    ARRAY_LOG_DEBUG("Array capacity after initialization: %zu\n", arr->capacity);           \
     arr;                                                                                    \
 })
 
