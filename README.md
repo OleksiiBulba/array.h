@@ -1,6 +1,6 @@
 # C Dynamic array.h Library
 
-This C library provides a simple and efficient mechanism for creating and managing dynamic arrays, inspired by the stb libraries and [nob library](https://github.com/tsoding/musializer/blob/master/src/nob.h) by [Tsoding](https://github.com/tsoding/). The library is designed as a header-only library to ease integration into other projects.
+This C library provides a simple and efficient mechanism for creating and managing dynamic arrays, inspired by the stb libraries and [nob library](https://github.com/tsoding/musializer/blob/master/src/nob.h) by [@Tsoding](http://github.com/Tsoding). The library is designed as a header-only library to ease integration into other projects.
 
 ## Features
 
