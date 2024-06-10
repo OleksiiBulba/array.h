@@ -40,7 +40,7 @@ Here's an example of using the dynamic array library with an int type:
 ARRAY_DEFINE(int); // Define the array type for integers
 
 int main() {
-    ARRAY(int) my_array = {NULL, 0, 0}; // Initialize the array
+    ARRAY(int) my_array = array_new(ARRAY(int)); // Initialize the array
 
     // Append items
     array_append(&my_array, 10);
@@ -67,26 +67,36 @@ Here's an example of using the dynamic array library with pointer types:
 
 #include "array.h"
 
-ARRAY_PTR_DEFINE(int); // Define the array type for int pointers
+typedef struct Entity {
+    int id;
+} Entity;
+
+ARRAY_PTR_DEFINE(Entity); // Define the array type for int pointers
 
 int main() {
-    ARRAY_PTR(int) *my_array = array_new(ARRAY_PTR(int)); // Create a new pointer array
+    ARRAY_PTR(Entity) *my_array = array_new(ARRAY_PTR(Entity)); // Create a new pointer array
 
-    int *item1 = malloc(sizeof(int));
-    int *item2 = malloc(sizeof(int));
-    *item1 = 10;
-    *item2 = 20;
+    Entity *entity1 = malloc(sizeof(Entity));
+    Entity *entity2 = malloc(sizeof(Entity));
+    Entity *entity3 = malloc(sizeof(Entity));
+    entity1->id = 10;
+    entity2->id = 20;
+    entity3->id = 30;
 
     // Append items
-    array_ptr_append(my_array, item1);
-    array_ptr_append(my_array, item2);
+    array_ptr_append(my_array, entity1);
+    array_ptr_append(my_array, entity2);
+    array_ptr_append_ptr(my_array, entity3); // Not managed by library
 
     // Access and print items
-    printf("Item at index 0: %d\n", *ARRAY_PTR_GET(my_array, 0));
-    printf("Item at index 1: %d\n", *ARRAY_PTR_GET(my_array, 1));
+    printf("Entity at index 0: %d\n", ARRAY_PTR_GET(my_array, 0)->id);
+    printf("Entity at index 1: %d\n", ARRAY_PTR_GET(my_array, 1)->id);
 
-    // Free the array (items will also be freed since they are managed by the library)
+    // Free the array (first two items will also be freed since they are managed by the library)
     array_ptr_free(my_array);
+
+    // Free the entity3 as it's not managed by the library
+    free(entity3);
 
     return 0;
 }
