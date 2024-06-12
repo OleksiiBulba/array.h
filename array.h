@@ -65,29 +65,12 @@
 #define ARRAY_LOG_DEBUG(...)
 #endif
 
-#define ARRAY_FOREACH(type_var, array)    \
-    for (size_t _i = 0, _size = (array)->count; _i < _size; ++_i) {  \
-        type_var = (array)->items[_i];
-#define ARRAY_PTR_FOREACH(type_var, array) \
-    for (size_t _i = 0, _size = (array)->count; _i < _size; ++_i) {  \
-        type_var = (array)->items[_i].item;
-#define ARRAY_FOREACH_END }
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define ARRAY_LEN(array) ((array)->count)
 
-#define ARRAY_GET(array, index)    \
-    (ARRAY_ASSERT(index >= 0 && index < (array)->count, "Index is out of bounds in array."), (array)->items[index])
-#define ARRAY_GET_REF(array, index) \
-    (ARRAY_ASSERT(index >= 0 && index < (array)->count, "Index is out of bounds in array."), &(array)->items[index])
-#define ARRAY_PTR_GET(array, index) \
-    (ARRAY_ASSERT(index >= 0 && index < (array)->count, "Index is out of bounds in array."), (array)->items[index].item)
-#define ARRAY_PTR_GET_REF(array, index) \
-    (ARRAY_ASSERT(index >= 0 && index < (array)->count, "Index is out of bounds in array."), &((array)->items[index].item))
-
+/** Deginitions **/
 #define ARRAY(item_type) array_##item_type
 #define ARRAY_PTR(item_type) array_array_##item_type
     
@@ -108,6 +91,27 @@ extern "C" {
         size_t count;                       \
         size_t capacity;                    \
     } ARRAY_PTR(item_type)
+/** END definitions **/
+
+
+#define ARRAY_FOREACH(type_var, array)    \
+    for (size_t _i = 0, _size = (array)->count; _i < _size; ++_i) {  \
+        type_var = (array)->items[_i];
+#define ARRAY_PTR_FOREACH(type_var, array) \
+    for (size_t _i = 0, _size = (array)->count; _i < _size; ++_i) {  \
+        type_var = (array)->items[_i].item;
+#define ARRAY_FOREACH_END }
+
+#define ARRAY_LEN(array) ((array)->count)
+
+#define ARRAY_GET(array, index)    \
+    (ARRAY_ASSERT(index >= 0 && index < (array)->count, "Index is out of bounds in array."), (array)->items[index])
+#define ARRAY_GET_REF(array, index) \
+    (ARRAY_ASSERT(index >= 0 && index < (array)->count, "Index is out of bounds in array."), &(array)->items[index])
+#define ARRAY_PTR_GET(array, index) \
+    (ARRAY_ASSERT(index >= 0 && index < (array)->count, "Index is out of bounds in array."), (array)->items[index].item)
+#define ARRAY_PTR_GET_REF(array, index) \
+    (ARRAY_ASSERT(index >= 0 && index < (array)->count, "Index is out of bounds in array."), &((array)->items[index].item))
 
 #define ARRAY_INIT_CAP 8
 
