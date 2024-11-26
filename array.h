@@ -31,48 +31,40 @@
 #ifndef ARRAY_ASSERT
 #include <assert.h>
 #define ARRAY_ASSERT(cond, msg) assert((cond) && msg "\n")
-#endif // ARRAY_ASSERT
+#endif /* ARRAY_ASSERT */
 
 #ifndef ARRAY_MALLOC
 #include <stdlib.h>
-#define ARRAY_MALLOC malloc
-#endif
+#define ARRAY_MALLOC(size) malloc(size)
+#endif /* ARRAY_MALLOC */
 
 #ifndef ARRAY_REALLOC
 #include <stdlib.h>
-#define ARRAY_REALLOC realloc
-#endif // ARRAY_REALLOC
+#define ARRAY_REALLOC(ptr, size) realloc(ptr, size)
+#endif /* ARRAY_REALLOC */
 
 #ifndef ARRAY_FREE
 #include <stdlib.h>
-#define ARRAY_FREE free
-#endif // ARRAY_FREE
+#define ARRAY_FREE(ptr) free(ptr)
+#endif /* ARRAY_FREE */
 
 #ifndef ARRAY_STRCOPY
 #include <string.h>
-#define ARRAY_STRCOPY strdup
-#endif
+#define ARRAY_STRCOPY(str) strdup(str)
+#endif /* ARRAY_STRCOPY */
 
-#ifndef ARRAY_MEMMMOVE
-#include <string.h>
-#define ARRAY_MEMMMOVE memmove
-#endif
-
-#ifdef ARRAY_DEBUG
-#include <stdio.h>
-#define ARRAY_LOG_DEBUG(fmt, ...) printf(fmt, ##__VA_ARGS__)
-#else
-#define ARRAY_LOG_DEBUG(...)
-#endif
+#ifndef ARRAY_INIT_CAP_DEFAULT
+#define ARRAY_INIT_CAP_DEFAULT 8
+#endif /* ARRAY_INIT_CAP_DEFAULT */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
-/** Deginitions **/
+/** Definitions **/
 #define ARRAY(item_type) array_##item_type
-#define ARRAY_PTR(item_type) array_array_##item_type
+#define ARRAY_PTR(item_type) array_ptr_##item_type
     
 #define ARRAY_DEFINE(item_type)         \
     typedef struct ARRAY(item_type) {   \
@@ -84,7 +76,7 @@ extern "C" {
 #define ARRAY_PTR_DEFINE(item_type)         \
     typedef struct {                        \
         item_type* item;                    \
-        bool should_free;                   \
+        void (*dctor)(void *item);          \
     } array_ptr_item_##item_type;           \
     typedef struct ARRAY_PTR(item_type) {   \
         array_ptr_item_##item_type* items;  \
@@ -94,15 +86,16 @@ extern "C" {
 /** END definitions **/
 
 
-#define ARRAY_FOREACH(type_var, array)    \
-    for (size_t _i = 0, _size = (array)->count; _i < _size; ++_i) {  \
+#define ARRAY_FOREACH(type_var, array)                                  \
+    for (size_t _i = 0, _size = (array)->count; _i < _size; ++_i) {     \
         type_var = (array)->items[_i];
-#define ARRAY_PTR_FOREACH(type_var, array) \
-    for (size_t _i = 0, _size = (array)->count; _i < _size; ++_i) {  \
+#define ARRAY_PTR_FOREACH(type_var, array)                              \
+    for (size_t _i = 0, _size = (array)->count; _i < _size; ++_i) {     \
         type_var = (array)->items[_i].item;
 #define ARRAY_FOREACH_END }
 
 #define ARRAY_LEN(array) ((array)->count)
+#define ARRAY_CAP(array) ((array)->capacity)
 
 #define ARRAY_GET(array, index)    \
     (ARRAY_ASSERT(index >= 0 && index < (array)->count, "Index is out of bounds in array."), (array)->items[index])
@@ -113,7 +106,7 @@ extern "C" {
 #define ARRAY_PTR_GET_REF(array, index) \
     (ARRAY_ASSERT(index >= 0 && index < (array)->count, "Index is out of bounds in array."), &((array)->items[index].item))
 
-#define ARRAY_INIT_CAP 8
+#define ARRAY_INIT_CAP ARRAY_INIT_CAP_DEFAULT
 
 #define array_append(array, _item)                                                                          \
     do {                                                                                                    \
@@ -223,13 +216,11 @@ extern "C" {
     arr->items = NULL;                                                                      \
     arr->count = 0;                                                                         \
     arr->capacity = 0;                                                                      \
-    ARRAY_LOG_DEBUG("Allocated array with initial capacity: %d\n", initial_capacity);       \
     if (initial_capacity > 0) {                                                             \
         arr->items = ARRAY_MALLOC(initial_capacity * sizeof(*(arr->items)));                \
         ARRAY_ASSERT(arr->items != NULL, "Failed to allocate memory for array items");      \
         arr->capacity = initial_capacity;                                                   \
     }                                                                                       \
-    ARRAY_LOG_DEBUG("Array capacity after initialization: %zu\n", arr->capacity);           \
     arr;                                                                                    \
 })
 
@@ -269,5 +260,5 @@ extern "C" {
 }
 #endif
 
-#endif // ARRAY_H_
+#endif /* ARRAY_H_ */
 
